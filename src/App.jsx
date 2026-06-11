@@ -24,7 +24,7 @@ export default function App() {
   
   const [certificateData, setCertificateData] = useState({
     destinatario: '',
-    claveCertificado: 'AUT-B-A-1220-067', // Valor constante
+    claveCertificado: 'AUT-B-A-1125-067', // Valor constante
     ciudad: 'Ciudad de México',
     fecha: '',
     cantidad: '',
@@ -67,18 +67,19 @@ export default function App() {
 
     const strainData = catalogData[selectedType]?.find(s => s.cepa === selectedStrain);
 
-    if (strainData) {
-      // CORRECCIÓN AQUÍ: Extraemos y renombramos las propiedades
-      const { identificación, genero, especie, ...restOfData } = strainData; 
-      setCertificateData(prevData => ({
-        ...prevData,
-        ...restOfData,
-        generoAnimal: genero, // Asignamos 'genero' a 'generoAnimal'
-        especieAnimal: especie, // Asignamos 'especie' a 'especieAnimal'
-        identificacionAnimal: identificación,
-      }));
-    }
-  }, [selectedType, selectedStrain]);
+  if (strainData) {
+    // 1. Añade "cepa" aquí para extraerlo del objeto
+    const { identificación, genero, especie, cepa, ...restOfData } = strainData; 
+    setCertificateData(prevData => ({
+      ...prevData,
+      ...restOfData,
+      generoAnimal: genero,
+      especieAnimal: especie,
+      cepaAnimal: cepa, // 2. Asigna el valor de "cepa" a "cepaAnimal"
+      identificacionAnimal: identificación,
+    }));
+  }
+}, [selectedType, selectedStrain]);
 
   const createPdfBlob = async (dataToRender) => {
     if (!libsLoaded) {
@@ -95,13 +96,37 @@ export default function App() {
     const { jsPDF } = window.jspdf;
     const html2canvas = window.html2canvas;
 
-    const canvas = await html2canvas(element, { scale: 2.5, useCORS: true, backgroundColor: null });
+    const canvas = await html2canvas(element, { 
+      scale: 2.5, 
+      useCORS: true, 
+      backgroundColor: '#ffffff',
+      onclone: (clonedDoc) => {
+        const el = clonedDoc.getElementById('certificateTemplateArea');
+        if (el) {
+          el.style.width = '816px';
+          el.style.maxWidth = 'none';
+        }
+      }
+    });
     const imgData = canvas.toDataURL('image/png');
     
-    const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+    const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'letter' });
     const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    const pdfPageHeight = pdf.internal.pageSize.getHeight();
+    
+    const imgRatio = canvas.width / canvas.height;
+    let renderWidth = pdfWidth;
+    let renderHeight = pdfWidth / imgRatio;
+    
+    let x = 0;
+    let y = 0;
+    if (renderHeight > pdfPageHeight) {
+      renderHeight = pdfPageHeight;
+      renderWidth = renderHeight * imgRatio;
+      x = (pdfWidth - renderWidth) / 2;
+    }
+    
+    pdf.addImage(imgData, 'PNG', x, y, renderWidth, renderHeight);
     
     return pdf.output('blob');
   };

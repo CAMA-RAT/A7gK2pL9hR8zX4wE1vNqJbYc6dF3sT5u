@@ -1,5 +1,10 @@
 import React from 'react';
 
+// Paso 1: Importa las imágenes directamente en el archivo.
+// Asegúrate de que las imágenes estén en la carpeta `src/assets/`.
+import logoImg from '../assets/logo.png';
+import watermarkImg from '../assets/marca-agua.png';
+
 // --- Componente: Certificate (Plantilla Visual) ---
 const Certificate = React.forwardRef(({ data }, ref) => {
   const getCantidadDesc = () => {
@@ -16,11 +21,11 @@ const Certificate = React.forwardRef(({ data }, ref) => {
     return `${cantidad} ${plural} ${sexo}`;
   };
 
-  // Estilo para la marca de agua como fondo CSS, apuntando a un archivo local
+  // Paso 2: Usa la imagen importada en el estilo.
   const mainStyle = {
     backgroundImage: `
       linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
-      url('/marca-agua.png')
+      url('${watermarkImg}')
     `,
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
@@ -32,7 +37,8 @@ const Certificate = React.forwardRef(({ data }, ref) => {
       <header className="p-10 border-b-2 border-gray-100">
         <div className="flex justify-between items-start">
           <div className="w-1/2 pr-4">
-            <img src="/logo.png" alt="Logo Principal" className="h-20 w-auto" />
+            {/* Paso 3: Usa la imagen importada en la etiqueta <img> */}
+            <img src={logoImg} alt="Logo Principal" className="h-20 w-auto" />
             <div className="mt-6 text-left text-sm text-gray-600">
               <p className="font-bold text-base text-gray-800">{data.destinatario || 'Nombre del Cliente Aquí'}</p>
               <p>Presente</p>
@@ -82,8 +88,24 @@ const Certificate = React.forwardRef(({ data }, ref) => {
                 periodo lleguen a presentar signos sugerentes de enfermedad, o que no han podido reestablecerse después del transporte, se deben separar del resto y ser
                 resguardados en un lugar apropiado para observación y si es necesario recibir el tratamiento correspondiente.
             </p>
+               <p>
+                El traslado y transportación de animales puede alterar su rutina de descanso y actividad, por lo que estos son susceptibles a la pérdida o aumento de peso durante
+                la realización del traslado, se recomienda ingresar a sus instalaciones con alimento y agua para su recuperación y regulación.
+            </p>
+            <p>
+              Los animales provenientes del bioterio de Modelos Animales y Servicios S.A. de C:V. cuentan con perfiles completos de monitoreo de salud periódicos, lo que
+              evidencia su buen estado de salud (emitidos por un laboratorio tercero acreditado).
+            </p>
             <p>
                 Durante el periodo de cuarentena se recomienda alojar una sola especie animal, para evitar factores estresantes o contaminación cruzada de los mismos.
+            </p>
+            <p>
+                Cualquier defecto detectado durante las 24 horas posteriores a su entrega deberá ser notificado formalmente a Modelos Animales y Servicios mediante una queja documentada;
+                Modelos Animales y Servicios tendrá derecho a verificar dichas observaciones y proponer acciones de solución conforme a los mecanismos de atención a quejas.
+            </p>
+            <p>
+              La responsabilidad de Modelos Animales y Servicios respecto a los animales suministrados cesa en el momento en que estos son recibidos por el CLIENTE. En consecuencia, Modelos Animales y Servicios no será responsable
+              por daños, deterioros, afectaciones sanitarias o cualquier otra consecuencia derivada del almacenamiento, manejo o uso inadecuado por parte del CLIENTE una vez realizada la entrega de los animales.
             </p>
         </div>
       </section>
